@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from calendar import monthrange
+from datetime import datetime
 from app.extensions import db, migrate
-from app.models import User
+from app.models import User, Habit
 from app.forms import RegistrationForm, LoginForm
 
 # Define the Blueprint
@@ -17,13 +19,6 @@ def index():
         return redirect(url_for("main.dashboard"))
     else:
         return redirect(url_for("main.login"))
-
-
-# The routing for dashboard
-@main.route("/dashboard")
-@login_required
-def dashboard():
-    return "Welcome to the Habit Tracker Webapp!"
 
 
 # The routing for registration.
@@ -65,3 +60,50 @@ def logout():
     logout_user()
     flash("You have been logged out.", "info")
     return redirect(url_for("main.login"))
+
+
+# The routing for dashboard
+@main.route("/dashboard")
+@login_required
+def dashboard():
+    current_date = datetime.today()
+    current_month = current_date.strftime('%B')
+    current_year = current_date.year
+    days_in_month = monthrange(current_year, current_date.month)[1]
+    start_day = current_date.replace(day=1).weekday()
+
+    #! Example Habits for testing (replace with DB queries).
+    habits = [
+        {"id": 1, "name": "Journal", "is_completed": lambda day: day % 2 == 0},
+        {"id": 2, "name": "Exercise", "is_completed": lambda day: day % 3 == 0},
+    ]
+
+    return render_template(
+        "dashboard.html",
+        current_month=current_month,
+        current_year=current_year,
+        days_in_month=days_in_month,
+        start_day=start_day,
+        habits=habits
+    )
+
+# The routing to add habits.
+
+
+@main.route("/add_habit", methods=["POST"])
+@login_required
+def add_habit():
+    # Get the habit name from the form
+    habit_name = request.form.get("habit_name")
+
+    if habit_name:
+        # Add the habit to the database
+        new_habit = Habit(name=habit_name, user_id=current_user.id)
+        db.session.add(new_habit)
+        db.session.commit()
+        flash("Habit added successfully!", "success")
+    else:
+        flash("Habit name cannot be empty", "danger")
+
+    # Redirect back to the dashboard
+    return redirect(url_for("main.dashboard"))

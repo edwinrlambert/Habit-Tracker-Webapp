@@ -1,3 +1,5 @@
+/* Base Styles */
+
 body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
@@ -33,4 +35,89 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+/* Dashboard Styles */
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.month-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.month-selector h2 {
+    margin: 0 20px;
+    font-size: 1.5rem;
+}
+
+.month-selector button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.month-selector button:hover {
+    background-color: #0056B3;
+}
+
+.tracker-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.tracker-table th,
+.tracker-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.tracker-table th {
+    background-color: #F1F1F1;
+    font-weight: bold;
+}
+
+.tracker-table input[type="checkbox"] {
+    cursor: pointer;
+    transform: scale(1.2);
+}
+
+.new-habit {
+    text-align: center;
+}
+
+.new-habit input[type="text"] {
+    padding: 10px;
+    width: 300px;
+    margin-right: 10px;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+}
+
+.new-habit button {
+    background-color: #28A745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.new-habit button:hover {
+    background-color: #218828;
 }
