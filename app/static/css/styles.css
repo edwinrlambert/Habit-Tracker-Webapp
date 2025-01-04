@@ -121,3 +121,22 @@ footer {
 .new-habit button:hover {
     background-color: #218828;
 }
+
+.toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.toggle-btn:hover .bi {
+    transform: scale(1.2);
+    transition: 0.2s;
+}
+
+.bi-check-circle-fill {
+    font-size: 1.2rem;
+}
+
+.bi-x-circle {
+    font-size: 1.2rem;
+}

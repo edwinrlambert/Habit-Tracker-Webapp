@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from calendar import monthrange
 from datetime import datetime
 from app.extensions import db, migrate
-from app.models import User, Habit
+from app.models import User, Habit, HabitStatus
 from app.forms import RegistrationForm, LoginForm
 
 # Define the Blueprint
@@ -68,8 +68,9 @@ def logout():
 def dashboard():
     current_date = datetime.today()
     current_month = current_date.strftime('%B')
+    current_month_num = current_date.month
     current_year = current_date.year
-    days_in_month = monthrange(current_year, current_date.month)[1]
+    days_in_month = monthrange(current_year, current_month_num)[1]
     start_day = current_date.replace(day=1).weekday()
 
     #! Example Habits for testing (replace with DB queries).
@@ -81,15 +82,15 @@ def dashboard():
     return render_template(
         "dashboard.html",
         current_month=current_month,
+        current_month_num=current_month_num,
         current_year=current_year,
         days_in_month=days_in_month,
         start_day=start_day,
         habits=habits
     )
 
+
 # The routing to add habits.
-
-
 @main.route("/add_habit", methods=["POST"])
 @login_required
 def add_habit():
@@ -106,4 +107,27 @@ def add_habit():
         flash("Habit name cannot be empty", "danger")
 
     # Redirect back to the dashboard
+    return redirect(url_for("main.dashboard"))
+
+
+@main.route("/toggle_habit/<int:habit_id>/<habit_date>", methods=["POST"])
+@login_required
+def toggle_habit(habit_id, habit_date):
+    habit = Habit.query.get_or_404(habit_id)
+    habit_date = datetime.strptime(habit_date, "%Y-%m-%d").date()
+
+    # Check if there's already a status for this habit and date
+    status = HabitStatus.query.filter_by(
+        habit_id=habit.id, date=habit_date).first()
+
+    if status:
+        # Toggle the completion status
+        status.completed = not status.completed
+    else:
+        # Create a new status
+        new_status = HabitStatus(
+            habit_id=habit.id, date=habit_date, completed=True)
+        db.session.add(new_status)
+
+    db.session.commit()
     return redirect(url_for("main.dashboard"))
